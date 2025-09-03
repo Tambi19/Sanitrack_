@@ -52,14 +52,17 @@ router.get("/:clusterId", async (req, res) => {
     const tasks = await Task.find({ complaintId: { $in: complaintIds } }).lean();
 
     // Merge task info into complaints
+    // Merge task info into complaints
     const complaintsWithTaskStatus = complaints.map(c => {
       const task = tasks.find(t => t.complaintId.toString() === c._id.toString());
       return {
         ...c,
+        taskId: task?._id || null,   // ✅ important fix
         taskStatus: task?.status || null,
         assignedCleaner: task?.assignedCleaner || null
       };
     });
+
 
     res.json({ success: true, complaints: complaintsWithTaskStatus });
   } catch (err) {

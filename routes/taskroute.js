@@ -2,6 +2,7 @@ const express = require("express");
 const Task = require("../models/task");
 const Complaint = require("../models/complaint");
 const User = require("../models/user");
+const Led = require("../models/led");
 const mongoose = require("mongoose");
 
 const router = express.Router();
@@ -38,6 +39,17 @@ router.post("/", async (req, res) => {
     });
 
     await task.save();
+
+    // 🔗 Link complaint to this task
+    await Complaint.findByIdAndUpdate(complaintId, { taskId: task._id, status: "In Progress" });
+
+    // 🔄 Update LED to in_progress when task assigned
+    await Led.findOneAndUpdate(
+      { clusterId },
+      { status: "in_progress", lastUpdated: new Date() },
+      { upsert: true, new: true }
+    );
+
     res.json({ success: true, message: "Task assigned successfully ✅", task });
   } catch (err) {
     console.error("POST /tasks error:", err);
@@ -45,29 +57,33 @@ router.post("/", async (req, res) => {
   }
 });
 
-
 /**
  * GET /tasks
- * Get tasks by cluster, optionally filtered by cleaner
+ * Fetch tasks for a specific cleaner & cluster
  */
 router.get("/", async (req, res) => {
   try {
     const { clusterId, cleanerId } = req.query;
-    if (!clusterId) return res.status(400).json({ success: false, message: "clusterId required" });
 
-    let query = { clusterId };
-    if (cleanerId && mongoose.Types.ObjectId.isValid(cleanerId)) {
-      query.workerId = cleanerId;
+    if (!clusterId || !cleanerId) {
+      return res.status(400).json({ success: false, message: "clusterId and cleanerId required" });
     }
 
-    const tasks = await Task.find(query).populate("workerId", "name email");
+    // 👇 Show only "assigned" or "cleaning_done" tasks
+    const tasks = await Task.find({
+      clusterId,
+      workerId: cleanerId,
+      status: { $in: ["assigned"] }
+    })
+      .populate("complaintId", "description location status")
+      .lean();
+
     res.json({ success: true, tasks });
   } catch (err) {
     console.error("GET /tasks error:", err);
     res.status(500).json({ success: false, message: err.message });
   }
 });
-
 
 /**
  * PUT /tasks/:id
@@ -83,25 +99,34 @@ router.put("/:id", async (req, res) => {
     if (proof) task.proof = proof;
     await task.save();
 
-    // Sync complaint status when task is completed
+    // 🔄 Update LED + Complaint based on task status
+    if (status === "cleaning_done") {
+      await Complaint.findByIdAndUpdate(task.complaintId, { status: "Waiting Approval" });
+      await Led.findOneAndUpdate(
+        { clusterId: task.clusterId },
+        { status: "in_review", lastUpdated: new Date() }
+      );
+    }
+
     if (status === "completed") {
-      const complaint = await Complaint.findById(task.complaintId);
-      if (complaint) {
-        complaint.status = "Resolved";
-        await complaint.save();
-      }
+      await Complaint.findByIdAndUpdate(task.complaintId, { status: "Resolved" });
+
+      await Led.findOneAndUpdate(
+        { clusterId: task.clusterId },
+        { status: "clean", lastUpdated: new Date() }
+      );
     }
 
     res.json({ success: true, task });
   } catch (err) {
+    console.error("PUT /tasks/:id error:", err);
     res.status(500).json({ success: false, message: err.message });
   }
 });
 
-
 /**
  * POST /tasks/complete/:taskId
- * Mark task as completed by cleaner/volunteer after cleaning is done
+ * Mark task as completed by volunteer
  */
 router.post("/complete/:taskId", async (req, res) => {
   try {
@@ -119,17 +144,20 @@ router.post("/complete/:taskId", async (req, res) => {
     task.completedAt = new Date();
     await task.save();
 
-    // Update related complaint status if exists
+    // Update related complaint
     if (task.complaintId) {
-      const complaint = await Complaint.findById(task.complaintId);
-      if (complaint) {
-        complaint.status = "Resolved";
-        await complaint.save();
-      }
+      await Complaint.findByIdAndUpdate(task.complaintId, { status: "Resolved" });
     }
+
+    // 🔄 Update LED to green clean
+    await Led.findOneAndUpdate(
+      { clusterId: task.clusterId },
+      { status: "clean", lastUpdated: new Date() }
+    );
 
     res.json({ success: true, message: "Task completed ✅", task });
   } catch (err) {
+    console.error("POST /tasks/complete error:", err);
     res.status(500).json({ success: false, message: err.message });
   }
 });

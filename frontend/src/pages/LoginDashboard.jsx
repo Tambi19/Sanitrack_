@@ -5,7 +5,7 @@ import axios from "axios";
 
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
-  const [role, setRole] = useState("cleaner"); // default, optional dropdown if needed
+  const [role, setRole] = useState(" "); // default, optional dropdown if needed
   const navigate = useNavigate();
 
   const handleChange = (e) =>
@@ -49,7 +49,7 @@ export default function Login() {
       <div className="absolute inset-0 bg-white/60"></div>
       <div className="relative z-10 bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
         <h2 className="text-2xl font-bold text-center mb-6">
-          Login as {role.charAt(0).toUpperCase() + role.slice(1)}
+          Login 
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
