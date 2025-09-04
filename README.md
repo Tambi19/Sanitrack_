@@ -59,10 +59,10 @@ It connects **Pilgrims**, **Cleaners**, and **Volunteers** through a digital pla
 - Socket.IO (for LED dashboard live updates)  
 
 ## Contributors:
-**Tambi Rao**
-**Aditya Bisai**
-**Amit Kumar**
-**Sanjeev Kumar**
+- Tambi Rao
+- Aditya Bisai
+- Amit Kumar
+- Sanjeev Kumar
 
 ---
 
