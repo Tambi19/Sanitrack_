@@ -7,7 +7,7 @@ By scanning a QR code placed across clusters, users instantly access the system 
 ## 📲 QR Flow – Landing Options  
 
 When a QR is scanned, the user sees **4 clear options**:  
-It connects **Pilgrims**, **Volunteers**, **Cleaners**, and **Admins** through a digital platform to:
+It connects **Pilgrims**, **Cleaners**, and **Volunteers** through a digital platform:
 
 1. 👤 **I am a Pilgrim** → Submit complaints, give feedback, and find nearby toilets  
 2. 🙌 **I am a Volunteer** → Assign cleaning tasks, monitor cleaners, and review pilgrim reports  
