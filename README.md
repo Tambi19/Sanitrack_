@@ -58,11 +58,13 @@ It connects **Pilgrims**, **Cleaners**, and **Volunteers** through a digital pla
 - JWT Authentication  
 - Socket.IO (for LED dashboard live updates)  
 
-### 🚀 Deployment  
-- **Frontend:** Vercel  
-- **Backend:** Render / Heroku  
-- **Database:** MongoDB Atlas  
+## Contributors:
+# Tambi Rao
+# Aditya Bisai
+# Amit Kumar
+# Sanjeev Kumar
 
 ---
 
-## 📂 Project Structure  
+## 📂 Project Github Repo:-
+https://github.com/Tambi19/Ujjain-Prototype
