@@ -7,10 +7,13 @@ const app = express();
 // ✅ Enable CORS (allow frontend on 5173)
 app.use(cors({
   origin: [
-    "http://localhost:5173",                  // local dev
-    "https://ujjain-prototype.vercel.app"     // deployed frontend on Vercel
+    "http://localhost:5173",
+    "http://localhost:5174",            // allow 5174 too
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:5174",
+    "https://ujjain-prototype.vercel.app"
   ],
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: true
 }));
 
