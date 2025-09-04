@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import mandirImg from "../assets/mandir.jpg";
-import api from "../api"; // ✅ use your axios instance
+import axios from "axios";
 
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
+  const [role, setRole] = useState(" "); // default, optional dropdown if needed
   const navigate = useNavigate();
 
   const handleChange = (e) =>
@@ -13,7 +14,7 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await api.post("/auth/login", {
+      const res = await axios.post("http://localhost:3000/api/auth/login", {
         email: form.email,
         password: form.password,
       });
@@ -47,7 +48,9 @@ export default function Login() {
     >
       <div className="absolute inset-0 bg-white/60"></div>
       <div className="relative z-10 bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
-        <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
+        <h2 className="text-2xl font-bold text-center mb-6">
+          Login 
+        </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="email"

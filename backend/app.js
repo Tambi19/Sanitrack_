@@ -6,14 +6,8 @@ const app = express();
 
 // ✅ Enable CORS (allow frontend on 5173)
 app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "http://localhost:5174",            // allow 5174 too
-    "http://127.0.0.1:5173",
-    "http://127.0.0.1:5174",
-    "https://ujjain-prototype.vercel.app"
-  ],
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  origin: "http://localhost:5173",
+  methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
 
@@ -55,9 +49,6 @@ app.get("/", (req, res) => {
 });
 
 // ✅ Start server
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-  console.log(`✅ Server running on port ${PORT}`);
+app.listen(3000, () => {
+  console.log("app is listening");
 });
-

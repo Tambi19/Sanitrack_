@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { useSearchParams } from "react-router-dom"; // ✅ get query params
+import { useSearchParams } from "react-router-dom";  // ✅ get query params
 import mandirImg from "../assets/mandir.jpg";
-import api from "../api"; // ✅ centralized axios instance
+import axios from "axios";
 
 export default function Pilgrim() {
   const [toiletId, setToiletId] = useState("");
   const [message, setMessage] = useState("");
-  const [searchParams] = useSearchParams(); 
-  const clusterId = searchParams.get("clusterId") || "1"; // fallback cluster
+  const [searchParams] = useSearchParams(); // ✅ hook
+  const clusterId = searchParams.get("clusterId") || "1"; // fallback
 
   const reportIssue = async (issue) => {
     if (!toiletId) {
@@ -16,8 +16,8 @@ export default function Pilgrim() {
     }
 
     try {
-      const res = await api.post("/feedback", {
-        clusterId: String(clusterId),
+      const res = await axios.post("http://localhost:3000/api/feedback", {
+        clusterId: String(clusterId),   // ✅ dynamic cluster id
         toiletNo: toiletId,
         feedback: issue,
       });
@@ -33,6 +33,7 @@ export default function Pilgrim() {
       setMessage("❌ Failed to connect to server.");
     }
   };
+
 
   return (
     <div

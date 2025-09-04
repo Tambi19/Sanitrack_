@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import api from "../api"; // ✅ import your axios instance
 
 export default function LedDashboard() {
   const location = useLocation();
@@ -16,9 +15,11 @@ export default function LedDashboard() {
     const fetchStatus = async () => {
       try {
         setLoading(true);
-        const res = await api.get(`/led/${clusterId}`);
-        if (res.data.success && res.data.cluster) {
-          setStatus(res.data.cluster.status);
+        const res = await fetch(`http://localhost:3000/api/led/${clusterId}`);
+        const data = await res.json();
+
+        if (data.success && data.cluster) {
+          setStatus(data.cluster.status);
         }
       } catch (err) {
         console.error("Error fetching LED status:", err);

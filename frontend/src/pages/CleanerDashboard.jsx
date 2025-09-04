@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import api from "../api"; // ✅ use centralized axios instance
+import axios from "axios";
 import logo from "../assets/logo.png";
 import mandirImg from "../assets/mandir.jpg";
 
@@ -25,7 +25,7 @@ export default function CleanerDashboard() {
       if (!clusterId || !cleanerId) return;
       try {
         setLoading(true);
-        const res = await api.get("/tasks", {
+        const res = await axios.get(`http://localhost:3000/api/tasks`, {
           params: { clusterId, cleanerId },
         });
 
@@ -83,7 +83,7 @@ export default function CleanerDashboard() {
   const markDone = async (task) => {
     if (!task.proof) return;
     try {
-      const res = await api.put(`/tasks/${task.id}`, {
+      const res = await axios.put(`http://localhost:3000/api/tasks/${task.id}`, {
         status: "cleaning_done",
         proof: task.proof,
       });

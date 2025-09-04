@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import mandirImg from "../assets/mandir.jpg";
 import axios from "axios";
-import api from "../api"; // ✅ centralized axios instance
 
 export default function Register() {
   const [searchParams] = useSearchParams();
@@ -21,7 +20,7 @@ export default function Register() {
     try {
       console.log("Registering:", { ...form, role, clusterId });
 
-      const res = await api.post("/auth/register", {
+      const res = await axios.post("http://localhost:3000/api/auth/register", {
         name: form.name,
         email: form.email,
         password: form.password,

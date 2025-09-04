@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useSearchParams } from "react-router-dom";
 import mandirImg from "../assets/mandir.jpg";
 import axios from "axios";
-import api from "../api"; // ✅ centralized axios instance
 
 export default function VolunteerDashboard() {
   const [searchParams] = useSearchParams();
@@ -24,7 +23,7 @@ export default function VolunteerDashboard() {
     if (clusterId === "unknown") return;
     try {
       setLoading(true);
-const res = await api.get(`/feedback/${clusterId}`);
+      const res = await axios.get(`http://localhost:3000/api/feedback/${clusterId}`);
       if (res.data.success) {
         setReports(
           res.data.complaints
@@ -56,7 +55,7 @@ const res = await api.get(`/feedback/${clusterId}`);
     if (clusterId === "unknown") return;
     const fetchCleaners = async () => {
       try {
-const res = await api.get(`/cleaner?clusterId=${clusterId}`);
+        const res = await axios.get(`http://localhost:3000/api/cleaner?clusterId=${clusterId}`);
         if (res.data.success) setCleaners(res.data.cleaners);
       } catch (err) {
         console.error("Error fetching cleaners:", err);
@@ -82,8 +81,12 @@ const res = await api.get(`/cleaner?clusterId=${clusterId}`);
       const report = reports.find((r) => r._id === reportId);
       if (!report) return showMessage("⚠️ Report not found.");
 
-      const res = await api.post("/tasks", { complaintId: reportId, clusterId, workerId: cleanerId, description: report.reportType });
-
+      const res = await axios.post("http://localhost:3000/api/tasks", {
+        complaintId: reportId,
+        clusterId,
+        workerId: cleanerId,
+        description: report.reportType,
+      });
 
       if (res.data.success) {
         showMessage(`🧹 ${cleaner.name} assigned to report ${reportId}.`);
@@ -96,23 +99,25 @@ const res = await api.get(`/cleaner?clusterId=${clusterId}`);
   };
 
   // ✅ Volunteer approves cleaner’s work
-const verifyCleanerWork = async (reportId, taskId) => {
-  try {
-    const taskRes = await api.post(`/tasks/complete/${taskId}`);
-    if (taskRes.data.success) {
-      await api.put(`/feedback/${reportId}`, { status: "resolved" });
-      showMessage(`✨ Work approved for report ${reportId}. LED turned green ✅`);
-      fetchReports();
-    }
-  } catch (err) {
-    console.error("Error approving cleaning:", err);
-    showMessage("❌ Failed to approve cleaning.");
-  }
-};
+  const verifyCleanerWork = async (reportId, taskId) => {
+    try {
+      // First mark the task completed
+      const taskRes = await axios.post(`http://localhost:3000/api/tasks/complete/${taskId}`);
+      if (taskRes.data.success) {
+        // Then update the feedback as resolved
+        await axios.put(`http://localhost:3000/api/feedback/${reportId}`, { status: "resolved" });
 
-const verifyReport = async (reportId) => {
+        showMessage(`✨ Work approved for report ${reportId}. LED turned green ✅`);
+        fetchReports();
+      }
+    } catch (err) {
+      console.error("Error approving cleaning:", err);
+      showMessage("❌ Failed to approve cleaning.");
+    }
+  };
+  const verifyReport = async (reportId) => {
   try {
-    await api.put(`/feedback/${reportId}`, { status: "verified" });
+    await axios.put(`http://localhost:3000/api/feedback/${reportId}`, { status: "verified" });
     showMessage(`📌 Report ${reportId} verified successfully.`);
     fetchReports();
   } catch (err) {
@@ -120,7 +125,6 @@ const verifyReport = async (reportId) => {
     showMessage("❌ Failed to verify report.");
   }
 };
-
 
   const getStatusColor = (status) => {
     switch (status) {
