@@ -67,4 +67,4 @@ It connects **Pilgrims**, **Cleaners**, and **Volunteers** through a digital pla
 ---
 
 ## 📂 Project Github Repo:-
-https://github.com/Tambi19/Ujjain-Prototype
+(https://github.com/Tambi19/Sanitrack_)
