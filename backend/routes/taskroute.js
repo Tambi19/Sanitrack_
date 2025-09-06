@@ -57,6 +57,38 @@ router.post("/", async (req, res) => {
   }
 });
 
+router.post("/verify/:complaintId", async (req, res) => {
+  try {
+    const { complaintId } = req.params;
+
+    // Validate complaint
+    const complaint = await Complaint.findById(complaintId);
+    if (!complaint) {
+      return res.status(404).json({ success: false, message: "Complaint not found" });
+    }
+
+    // Mark complaint verified
+    complaint.status = "Verified";
+    await complaint.save();
+
+    // 🔄 Update LED to dirty immediately
+    await Led.findOneAndUpdate(
+      { clusterId: complaint.clusterId },
+      { status: "dirty", lastUpdated: new Date() },
+      { upsert: true, new: true }
+    );
+
+    res.json({
+      success: true,
+      message: "Complaint verified and LED set to RED (dirty) 🚨",
+      complaint,
+    });
+  } catch (err) {
+    console.error("POST /tasks/verify error:", err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 /**
  * GET /tasks
  * Fetch tasks for a specific cleaner & cluster
