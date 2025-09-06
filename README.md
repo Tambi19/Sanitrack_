@@ -65,6 +65,24 @@ It connects **Pilgrims**, **Cleaners**, and **Volunteers** through a digital pla
 - Sanjeev Kumar
 
 ---
-
 ## 📂 Project Github Repo:-
 (https://github.com/Tambi19/Sanitrack_)
+
+# ⚡ Instructions to Run the Project  
+
+### 1. Clone the repository  
+```bash
+git clone https://github.com/Tambi19/Sanitrack_.git
+cd Sanitrack_
+2. Install dependencies
+   >> cd frontend
+    npm install
+   >> cd ../backend
+    npm install
+## Running the Project
+Start Backend Server:
+ >> cd backend
+  npm run dev
+Start Frontend Server:
+  >>cd frontend
+  npm run dev
